@@ -27,9 +27,10 @@ public class ModeloService implements ManageModeloUseCase {
     @Transactional
     @Override
     public ModeloDTO createModelo(RegistrarModeloRequest request) {
+
         // 1. Map Request to Domain
         Modelo modelo = modeloMapper.toDomain(request);
-
+        modelo.setEstado(true);
         // 2. Generate Combinations (Business Logic)
         generateCombinations(modelo, request.getIdsTallas());
 

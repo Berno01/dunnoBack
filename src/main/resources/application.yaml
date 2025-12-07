@@ -4,6 +4,7 @@ spring:
   jackson:
     default-property-inclusion: non_null
     property-naming-strategy: SNAKE_CASE
+    time-zone: America/La_Paz
   datasource:
     url: ${DB_HOST}
     username: ${DB_USER}

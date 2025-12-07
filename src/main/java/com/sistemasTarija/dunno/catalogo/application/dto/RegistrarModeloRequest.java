@@ -23,6 +23,7 @@ public class RegistrarModeloRequest {
     private Integer idCorte;
     @JsonProperty("colores")
     private List<ColorRequest> colores;
+
     @JsonProperty("idsTallas")
     private List<Integer> idsTallas;
 

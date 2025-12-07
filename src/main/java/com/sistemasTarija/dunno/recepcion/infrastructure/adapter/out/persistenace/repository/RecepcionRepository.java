@@ -1,0 +1,33 @@
+package com.sistemasTarija.dunno.recepcion.infrastructure.adapter.out.persistenace.repository;
+
+import com.sistemasTarija.dunno.recepcion.infrastructure.adapter.out.persistenace.entity.RecepcionEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+
+@Repository
+public interface RecepcionRepository extends JpaRepository<RecepcionEntity, Integer> {
+    
+    @Query("SELECT r FROM RecepcionEntity r " +
+           "WHERE (:idSucursal IS NULL OR r.idSucursal = :idSucursal) " +
+           "AND r.idRecepcion = :idRecepcion")
+    Optional<RecepcionEntity> buscarPorIdYSucursal(
+            @Param("idRecepcion") Integer idRecepcion,
+            @Param("idSucursal") Integer idSucursal
+    );
+
+    @Query("SELECT r FROM RecepcionEntity r " +
+           "WHERE (:idSucursal IS NULL OR r.idSucursal = :idSucursal) " +
+           "AND r.fecha BETWEEN :fechaInicio AND :fechaFin " +
+           "ORDER BY r.fecha DESC")
+    List<RecepcionEntity> buscarListaConFiltros(
+            @Param("idSucursal") Integer idSucursal,
+            @Param("fechaInicio") LocalDateTime fechaInicio,
+            @Param("fechaFin") LocalDateTime fechaFin
+    );
+}
