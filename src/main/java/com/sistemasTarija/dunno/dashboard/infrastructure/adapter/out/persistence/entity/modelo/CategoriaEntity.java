@@ -1,0 +1,19 @@
+package com.sistemasTarija.dunno.dashboard.infrastructure.adapter.out.persistence.entity.modelo;
+
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
+@Entity(name = "DashboardCategoria")
+@Table(name = "categoria")
+@Getter
+@Setter
+public class CategoriaEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_categoria")
+    private Integer id;
+
+    @Column(name = "nombre_categoria")
+    private String nombre;
+}
