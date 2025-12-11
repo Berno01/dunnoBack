@@ -141,7 +141,7 @@ public class ModeloRepositoryAdapter implements ModeloPersistencePort {
 
     @Override
     public List<Modelo> findAll() {
-        return modeloRepository.findAll().stream()
+        return modeloRepository.findByEstadoTrue().stream()
                 .map(modeloPersistenceMapper::toDomain)
                 .collect(Collectors.toList());
     }

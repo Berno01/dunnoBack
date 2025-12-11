@@ -47,7 +47,7 @@ public class CatalogoRepositoryAdapter implements CatalogoPersistencePort {
 
     @Override
     public List<Marca> findAllMarcas() {
-        return mapper.toMarcaDomainList(marcaRepository.findAll());
+        return mapper.toMarcaDomainList(marcaRepository.findByEstadoTrue());
     }
 
     // ==================== CATEGORIA ====================
@@ -72,7 +72,7 @@ public class CatalogoRepositoryAdapter implements CatalogoPersistencePort {
 
     @Override
     public List<Categoria> findAllCategorias() {
-        return mapper.toCategoriaDomainList(categoriaRepository.findAll());
+        return mapper.toCategoriaDomainList(categoriaRepository.findByEstadoTrue());
     }
 
     // ==================== CORTE ====================
@@ -97,7 +97,7 @@ public class CatalogoRepositoryAdapter implements CatalogoPersistencePort {
 
     @Override
     public List<Corte> findAllCortes() {
-        return mapper.toCorteDomainList(corteRepository.findAll());
+        return mapper.toCorteDomainList(corteRepository.findByEstadoTrue());
     }
 
     // ==================== TALLA ====================
@@ -122,7 +122,7 @@ public class CatalogoRepositoryAdapter implements CatalogoPersistencePort {
 
     @Override
     public List<Talla> findAllTallas() {
-        return mapper.toTallaDomainList(tallaRepository.findAll());
+        return mapper.toTallaDomainList(tallaRepository.findByEstadoTrue());
     }
 
     // ==================== COLOR ====================
@@ -147,6 +147,6 @@ public class CatalogoRepositoryAdapter implements CatalogoPersistencePort {
 
     @Override
     public List<Color> findAllColores() {
-        return mapper.toColorDomainList(colorRepository.findAll());
+        return mapper.toColorDomainList(colorRepository.findByEstadoTrue());
     }
 }

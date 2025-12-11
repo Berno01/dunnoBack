@@ -4,9 +4,11 @@ import com.sistemasTarija.dunno.catalogo.infrastructure.adapter.out.persistence.
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface TallaRepository extends JpaRepository<TallaCatalogoEntity, Integer> {
     Optional<TallaCatalogoEntity> findByNombre(String nombre);
+    List<TallaCatalogoEntity> findByEstadoTrue();
 }
