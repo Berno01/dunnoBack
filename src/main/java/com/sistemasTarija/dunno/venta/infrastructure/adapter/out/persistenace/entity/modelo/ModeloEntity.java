@@ -12,6 +12,9 @@ public class ModeloEntity {
     @Column(name = "nombre_modelo")
     private String nombre;
 
+    @Column(name = "precio")
+    private Double precio;
+
     @ManyToOne @JoinColumn(name = "id_marca")
     private MarcaEntity marca;
 

@@ -47,6 +47,7 @@ public class InventarioService implements FindCatalogoUseCase {
         DetallePrendaDTO detalleDTO = new DetallePrendaDTO();
         detalleDTO.setIdModelo(cabecera.getIdModelo());
         detalleDTO.setNombreModelo(cabecera.getNombreModelo());
+        detalleDTO.setPrecio(cabecera.getPrecio());
         detalleDTO.setNombreMarca(cabecera.getNombreMarca());
         detalleDTO.setNombreCategoria(cabecera.getNombreCategoria());
         detalleDTO.setNombreCorte(cabecera.getNombreCorte());

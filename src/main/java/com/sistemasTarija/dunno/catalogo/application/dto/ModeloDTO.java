@@ -16,6 +16,7 @@ import java.util.List;
 public class ModeloDTO {
     private Integer id;
     private String nombre;
+    private Double precio;
     private OptionDTO marca;
     private OptionDTO categoria;
     private OptionDTO corte;

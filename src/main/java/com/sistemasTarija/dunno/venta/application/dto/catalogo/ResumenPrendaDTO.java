@@ -10,6 +10,7 @@ import lombok.Setter;
 public class ResumenPrendaDTO {
     private Integer idModelo;
     private String nombreModelo;
+    private Double precio;
     private String nombreMarca;
     private String nombreCategoria;
     private String fotoPortada; // Una sola foto representativa

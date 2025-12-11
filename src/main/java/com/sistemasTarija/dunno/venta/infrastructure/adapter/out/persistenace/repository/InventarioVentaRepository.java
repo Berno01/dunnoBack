@@ -22,7 +22,7 @@ public interface InventarioVentaRepository extends JpaRepository<InventarioVenta
 
 
     @Query("SELECT new com.sistemasTarija.dunno.venta.application.dto.catalogo.ResumenPrendaDTO(" +
-            "m.id, m.nombre, ma.nombre, cat.nombre, " +
+            "m.id, m.nombre, m.precio, ma.nombre, cat.nombre, " +
             "(SELECT MIN(mc.fotoUrl) FROM ModeloColorEntity mc WHERE mc.modelo.id = m.id), " +
             "SUM(i.stockInventario), " +
             "CASE WHEN SUM(i.stockInventario) < 5 THEN true ELSE false END) " +
@@ -34,12 +34,13 @@ public interface InventarioVentaRepository extends JpaRepository<InventarioVenta
             "JOIN m.categoria cat " +
             "WHERE i.idSucursal = :idSucursal " +
             "AND i.estado = true " +
-            "GROUP BY m.id, m.nombre, ma.nombre, cat.nombre")
+            "GROUP BY m.id, m.nombre, m.precio, ma.nombre, cat.nombre")
     List<ResumenPrendaDTO> obtenerListadoResumen(@Param("idSucursal") Integer idSucursal);
 
     @Query("SELECT new com.sistemasTarija.dunno.venta.infrastructure.adapter.out.persistenace.dto.InventarioRawDTO(" +
             "m.id, " +                  // idModelo
             "m.nombre, " +              // nombreModelo
+            "m.precio, " +              // precio
             "ma.nombre, " +             // nombreMarca
             "cat.nombre, " +            // nombreCategoria
             "co.nombre, " +             // nombreCorte

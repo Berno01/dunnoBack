@@ -9,6 +9,7 @@ public class InventarioRawDTO {
     // Datos del Modelo
     private Integer idModelo;
     private String nombreModelo;
+    private Double precio;
     private String nombreMarca;
     private String nombreCategoria;
     private String nombreCorte;

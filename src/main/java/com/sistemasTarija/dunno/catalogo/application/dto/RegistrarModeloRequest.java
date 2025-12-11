@@ -15,6 +15,8 @@ import java.util.List;
 public class RegistrarModeloRequest {
     @JsonProperty("nombreModelo")
     private String nombreModelo;
+    @JsonProperty("precio")
+    private Double precio;
     @JsonProperty("idMarca")
     private Integer idMarca;
     @JsonProperty("idCategoria")

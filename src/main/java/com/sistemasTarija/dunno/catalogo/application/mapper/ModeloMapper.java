@@ -30,6 +30,7 @@ public class ModeloMapper {
 
         return Modelo.builder()
                 .nombre(request.getNombreModelo())
+                .precio(request.getPrecio())
                 .idMarca(request.getIdMarca())
                 .idCategoria(request.getIdCategoria())
                 .idCorte(request.getIdCorte())
@@ -59,6 +60,7 @@ public class ModeloMapper {
         return ModeloDTO.builder()
                 .id(modelo.getId())
                 .nombre(modelo.getNombre())
+                .precio(modelo.getPrecio())
                 .marca(catalogoMapper.toMarcaDTO(modelo.getMarca()))
                 .categoria(catalogoMapper.toCategoriaDTO(modelo.getCategoria()))
                 .corte(catalogoMapper.toCorteDTO(modelo.getCorte()))

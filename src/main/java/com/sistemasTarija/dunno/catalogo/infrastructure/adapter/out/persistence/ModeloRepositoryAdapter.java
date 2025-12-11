@@ -36,6 +36,7 @@ public class ModeloRepositoryAdapter implements ModeloPersistencePort {
                 existingEntity.setIdMarca(modelo.getIdMarca());
                 existingEntity.setIdCategoria(modelo.getIdCategoria());
                 existingEntity.setIdCorte(modelo.getIdCorte());
+                existingEntity.setPrecio(modelo.getPrecio());
                 existingEntity.setEstado(modelo.getEstado());
                 
                 // Manejar colores y variantes de forma inteligente (sin eliminar, solo actualizar/agregar)
