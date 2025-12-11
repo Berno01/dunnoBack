@@ -14,4 +14,5 @@ import java.time.LocalDate;
 public class VentaFilterDTO {
     private Integer idSucursal;
     private LocalDate fecha;
+    private LocalDate fechaFin;
 }

@@ -57,9 +57,10 @@ public class VentaController {
     public ResponseEntity<List<VentaDTO>> findAll(
             @RequestHeader("X-Usuario-Id") Integer idUsuario,
             @RequestParam(required = false) Integer idSucursal,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha
+            @RequestParam(value = "fecha", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha,
+            @RequestParam(value = "fecha_fin", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin
     ) {
-        VentaFilterDTO filtro = new VentaFilterDTO(idSucursal, fecha);
+        VentaFilterDTO filtro = new VentaFilterDTO(idSucursal, fecha, fechaFin);
         return ResponseEntity.ok(findVentaUseCase.findAll(filtro, idUsuario));
     }
 

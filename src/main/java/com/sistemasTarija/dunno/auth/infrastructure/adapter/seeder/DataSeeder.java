@@ -33,10 +33,15 @@ public class DataSeeder implements CommandLineRunner {
         
         // Usuario 1: Administrador
         crearOActualizarUsuario("berno", "123", "ADMIN", null, "Bernardo Administrador");
-        
+        crearOActualizarUsuario("dunnoadmin", "du2025nno", "ADMIN", null, "Administrador");
+
         // Usuario 2: Vendedor de sucursal 1
-        crearOActualizarUsuario("vendedor1", "123", "VENDEDOR", 1, "Vendedor Uno");
-        
+        crearOActualizarUsuario("dunnotja", "du2025nno", "VENDEDOR", 1, "Vendedor Uno Tja");
+        crearOActualizarUsuario("dunnotja2", "du2025nno", "VENDEDOR", 1, "Vendedor Dos Tja");
+        crearOActualizarUsuario("dunnocbba", "du2025nno", "VENDEDOR", 2, "Vendedor Uno Cbba");
+        crearOActualizarUsuario("dunnoscz", "du2025nno", "VENDEDOR", 3, "Vendedor Uno SCZ");
+
+
         log.info("Carga de datos iniciales completada.");
     }
     

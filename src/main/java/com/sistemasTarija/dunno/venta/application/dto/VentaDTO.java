@@ -30,8 +30,18 @@ public class VentaDTO {
     private Double montoQr;
     @JsonProperty("monto_tarjeta")
     private Double montoTarjeta;
+    @JsonProperty("monto_giftcard")
+    private Double montoGiftcard;
+    @JsonProperty("descuento")
+    private Double descuento;
+    @JsonProperty("tipo_descuento")
+    private String tipoDescuento;
     @JsonProperty("tipo_venta")
     private String tipo;
+    @JsonProperty("id_usuario")
+    private Integer idUsuario;
+    @JsonProperty("username")
+    private String username;
 
 
 

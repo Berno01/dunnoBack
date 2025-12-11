@@ -53,8 +53,12 @@ public class VentaServiceTest {
         Double montoEfectivo=230.00;
         Double montoQr=0.00;
         Double montoTarjeta=20.00;
+        Double montoGiftcard=0.00;
+        Double descuento=0.00;
+        String tipoDescuento="SIN DESCUENTO";
         String tipo="Local";
         Double totalVenta=montoEfectivo+montoQr+montoTarjeta;
+        Integer idUsuario = 1;
 
 
         DetalleVentaDTO detalleDTO = new DetalleVentaDTO();
@@ -64,12 +68,12 @@ public class VentaServiceTest {
         detalleDTO.setTotal(totalDetalle);
 
 
-        VentaDTO ventaDeEntrada = new VentaDTO(null,fechaHoraObj,idSucursal,totalVenta,montoEfectivo, montoQr, montoTarjeta,tipo,List.of(detalleDTO));
+        VentaDTO ventaDeEntrada = new VentaDTO(null,fechaHoraObj,idSucursal,totalVenta,montoEfectivo, montoQr, montoTarjeta, montoGiftcard, descuento, tipoDescuento, tipo, idUsuario, null, List.of(detalleDTO));
 
 
         DetalleVenta detalleDominio = new DetalleVenta(idVariante, cantidad, precioUnitario);
 
-        Venta ventaDominio = new Venta(1,fechaHoraObj,idSucursal,montoEfectivo,montoQr,montoTarjeta,tipo,List.of(detalleDominio));
+        Venta ventaDominio = new Venta(1,fechaHoraObj,idSucursal,montoEfectivo,montoQr,montoTarjeta, montoGiftcard, descuento, tipoDescuento, tipo, List.of(detalleDominio));
         ventaDominio.setDetalleVenta(List.of(detalleDominio));
 
         Inventario inventarioExistente = new Inventario(1, idVariante, 50, idSucursal);

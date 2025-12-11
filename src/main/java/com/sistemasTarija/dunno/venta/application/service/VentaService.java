@@ -22,6 +22,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -37,6 +38,13 @@ public class VentaService implements CreateVentaUseCase, FindVentaUseCase, Updat
     @Transactional
     public Venta save(VentaDTO ventaDTO) {
         Venta venta = mapper.toDomain(ventaDTO);
+        
+        // Set audit fields for creation
+        venta.setCreatedAt(venta.getFecha());
+        venta.setUpdatedAt(venta.getFecha());
+        venta.setCreatedBy(ventaDTO.getIdUsuario());
+        venta.setUpdatedBy(ventaDTO.getIdUsuario());
+
         for(DetalleVenta detalle : venta.getDetalleVenta()) {
             Integer idVariante = detalle.getIdVariante();
             Integer idSucursal = venta.getIdSucursal();
@@ -60,7 +68,19 @@ public class VentaService implements CreateVentaUseCase, FindVentaUseCase, Updat
         Integer sucursalParaBuscar = usuario.isAdmin() ? null : usuario.getIdSucursal();
 
         return ventaPort.findByIdAndSucursal(idVenta, sucursalParaBuscar)
-                .map(mapper::toDto);
+                .map(venta -> {
+                    VentaDTO ventaDTO = mapper.toDto(venta);
+                    // Obtener el username del usuario que creó la venta
+                    if (venta.getCreatedBy() != null) {
+                        try {
+                            Usuario creador = findUsuarioUseCase.findById(venta.getCreatedBy());
+                            ventaDTO.setUsername(creador.getUsername());
+                        } catch (Exception e) {
+                            ventaDTO.setUsername("Usuario desconocido");
+                        }
+                    }
+                    return ventaDTO;
+                });
     }
 
     @Override
@@ -74,12 +94,29 @@ public class VentaService implements CreateVentaUseCase, FindVentaUseCase, Updat
             sucursalParaBuscar = usuario.getIdSucursal();
         }
 
-        LocalDate fechaBase = (filtro.getFecha() != null) ? filtro.getFecha() : LocalDate.now();
-        LocalDateTime inicio = fechaBase.atStartOfDay();
-        LocalDateTime fin = fechaBase.atTime(LocalTime.MAX);
+        LocalDate fechaInicioBase = (filtro.getFecha() != null) ? filtro.getFecha() : LocalDate.now();
+        LocalDate fechaFinBase = (filtro.getFechaFin() != null) ? filtro.getFechaFin() : LocalDate.now();
+        LocalDateTime inicio = fechaInicioBase.atStartOfDay();
+        LocalDateTime fin = fechaFinBase.atTime(LocalTime.MAX);
 
         List<Venta> ventasDominio = ventaPort.findAllByFilters(sucursalParaBuscar, inicio, fin);
-        return mapper.toDtoList(ventasDominio);
+        
+        // Convertir a DTO sin detalles y agregar username
+        return ventasDominio.stream()
+                .map(venta -> {
+                    VentaDTO ventaDTO = mapper.toDtoWithoutDetails(venta);
+                    // Obtener el username del usuario que creó la venta
+                    if (venta.getCreatedBy() != null) {
+                        try {
+                            Usuario creador = findUsuarioUseCase.findById(venta.getCreatedBy());
+                            ventaDTO.setUsername(creador.getUsername());
+                        } catch (Exception e) {
+                            ventaDTO.setUsername("Usuario desconocido");
+                        }
+                    }
+                    return ventaDTO;
+                })
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -119,8 +156,15 @@ public class VentaService implements CreateVentaUseCase, FindVentaUseCase, Updat
                 ventaNuevaDatos.getMontoEfectivo(),
                 ventaNuevaDatos.getMontoQr(),
                 ventaNuevaDatos.getMontoTarjeta(),
+                ventaNuevaDatos.getMontoGiftcard(),
+                ventaNuevaDatos.getDescuento(),
+                ventaNuevaDatos.getTipoDescuento(),
                 ventaNuevaDatos.getTipoVenta()
         );
+        
+        // Update audit fields
+        ventaAntigua.setUpdatedAt(LocalDateTime.now());
+        ventaAntigua.setUpdatedBy(ventaDTO.getIdUsuario());
 
         Venta ventaActualizada = ventaPort.save(ventaAntigua);
         return mapper.toDto(ventaActualizada);

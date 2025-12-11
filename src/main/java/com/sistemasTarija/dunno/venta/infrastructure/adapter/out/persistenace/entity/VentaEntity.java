@@ -33,10 +33,25 @@ public class VentaEntity {
     private Double montoQr;
     @Column(name = "monto_tarjeta")
     private Double montoTarjeta;
+    @Column(name = "monto_giftcard")
+    private Double montoGiftcard;
+    @Column(name = "descuento")
+    private Double descuento;
+    @Column(name = "tipo_descuento")
+    private String tipoDescuento;
     @Column(name = "tipo_venta")
     private String tipoVenta;
     @Column(name = "estado_venta")
     private Boolean estadoVenta;
+
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+    @Column(name = "created_by")
+    private Integer createdBy;
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+    @Column(name = "updated_by")
+    private Integer updatedBy;
 
     @OneToMany(
             mappedBy = "venta",

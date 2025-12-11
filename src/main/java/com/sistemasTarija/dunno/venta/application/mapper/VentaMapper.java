@@ -24,6 +24,9 @@ public class VentaMapper {
                 dto.getMontoEfectivo(),
                 dto.getMontoQr(),
                 dto.getMontoTarjeta(),
+                dto.getMontoGiftcard(),
+                dto.getDescuento(),
+                dto.getTipoDescuento(),
                 dto.getTipo(),
                 detalles
         );
@@ -47,13 +50,36 @@ public class VentaMapper {
                 domain.getIdVenta(),
                 domain.getFecha(),
                 domain.getIdSucursal(),
-                domain.getTotal(), // Ojo: Asegúrate que VentaDTO tenga campo "total" si lo necesitas en el front
+                domain.getTotal(),
                 domain.getMontoEfectivo(),
                 domain.getMontoQr(),
                 domain.getMontoTarjeta(),
+                domain.getMontoGiftcard(),
+                domain.getDescuento(),
+                domain.getTipoDescuento(),
                 domain.getTipoVenta(),
-                // domain.getEstado(), // Si quieres devolver el estado
+                domain.getCreatedBy(),
+                null, // username - se setea en el servicio
                 detallesDto
+        );
+    }
+
+    public VentaDTO toDtoWithoutDetails(Venta domain) {
+        return new VentaDTO(
+                domain.getIdVenta(),
+                domain.getFecha(),
+                domain.getIdSucursal(),
+                domain.getTotal(),
+                domain.getMontoEfectivo(),
+                domain.getMontoQr(),
+                domain.getMontoTarjeta(),
+                domain.getMontoGiftcard(),
+                domain.getDescuento(),
+                domain.getTipoDescuento(),
+                domain.getTipoVenta(),
+                domain.getCreatedBy(),
+                null, // username - se setea en el servicio
+                null // Sin detalle de venta para listados
         );
     }
 
