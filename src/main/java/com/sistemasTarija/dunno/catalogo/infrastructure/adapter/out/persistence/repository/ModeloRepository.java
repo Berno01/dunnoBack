@@ -10,4 +10,5 @@ import java.util.List;
 public interface ModeloRepository extends JpaRepository<ModeloCatalogoEntity, Integer> {
     boolean existsByNombre(String nombre);
     List<ModeloCatalogoEntity> findByEstadoTrue();
+    List<ModeloCatalogoEntity> findByEstadoTrueOrderByIdDesc();
 }
