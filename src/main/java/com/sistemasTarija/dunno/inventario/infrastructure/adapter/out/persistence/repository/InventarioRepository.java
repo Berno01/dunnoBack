@@ -29,6 +29,7 @@ public interface InventarioRepository extends JpaRepository<InventarioEntity, In
             "LEFT JOIN ModeloColorInventarioEntity mc ON mc.modelo.id = m.id " +
             "LEFT JOIN VarianteInventarioEntity v ON v.modeloColor.id = mc.id " +
             "LEFT JOIN InventarioEntity i ON i.variante.id = v.id AND i.estado = true " +
+            "WHERE m.estado = true " +
             "GROUP BY m.id, m.nombre, cat.nombre, ma.nombre, co.nombre " +
             "ORDER BY m.nombre")
     List<InventarioResumenDTO> obtenerResumenGlobal();
@@ -39,7 +40,9 @@ public interface InventarioRepository extends JpaRepository<InventarioEntity, In
     @Query("SELECT i FROM InventarioEntity i " +
             "JOIN i.variante v " +
             "JOIN v.modeloColor mc " +
+            "JOIN mc.modelo m " +
             "WHERE mc.modelo.id = :idModelo " +
+            "AND m.estado = true " +
             "AND i.estado = true")
     List<InventarioEntity> findInventariosByModelo(@Param("idModelo") Integer idModelo);
 }

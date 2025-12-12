@@ -17,6 +17,7 @@ public interface ModeloInventarioRepository extends JpaRepository<ModeloInventar
             "LEFT JOIN FETCH m.marca " +
             "LEFT JOIN FETCH m.categoria " +
             "LEFT JOIN FETCH m.corte " +
-            "WHERE m.id = :idModelo")
+            "WHERE m.id = :idModelo " +
+            "AND m.estado = true")
     Optional<ModeloInventarioEntity> findByIdWithRelations(@Param("idModelo") Integer idModelo);
 }

@@ -34,6 +34,7 @@ public interface InventarioVentaRepository extends JpaRepository<InventarioVenta
             "JOIN m.categoria cat " +
             "WHERE i.idSucursal = :idSucursal " +
             "AND i.estado = true " +
+            "AND m.estado = true " +
             "GROUP BY m.id, m.nombre, m.precio, ma.nombre, cat.nombre")
     List<ResumenPrendaDTO> obtenerListadoResumen(@Param("idSucursal") Integer idSucursal);
 
@@ -61,6 +62,7 @@ public interface InventarioVentaRepository extends JpaRepository<InventarioVenta
             "JOIN v.talla t " +
             "WHERE i.idSucursal = :idSucursal " +
             "AND m.id = :idModelo " +
+            "AND m.estado = true " +
             "AND i.estado = true " +
             "ORDER BY col.nombre, t.nombre")
     List<InventarioRawDTO> obtenerDetalleModeloRaw(@Param("idSucursal") Integer idSucursal, @Param("idModelo") Integer idModelo);

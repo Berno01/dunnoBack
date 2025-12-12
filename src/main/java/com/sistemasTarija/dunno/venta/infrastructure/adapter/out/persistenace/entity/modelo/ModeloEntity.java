@@ -23,4 +23,7 @@ public class ModeloEntity {
 
     @ManyToOne @JoinColumn(name = "id_corte")
     private CorteEntity corte;
+
+    @Column(name = "estado")
+    private Boolean estado;
 }
