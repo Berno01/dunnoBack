@@ -79,9 +79,10 @@ public class RecepcionService implements CreateRecepcionUseCase, FindRecepcionUs
             sucursalParaBuscar = usuario.getIdSucursal();
         }
 
-        LocalDate fechaBase = (filtro.getFecha() != null) ? filtro.getFecha() : LocalDate.now();
-        LocalDateTime inicio = fechaBase.atStartOfDay();
-        LocalDateTime fin = fechaBase.atTime(LocalTime.MAX);
+        LocalDate fechaInicioBase = (filtro.getFecha() != null) ? filtro.getFecha() : LocalDate.now();
+        LocalDate fechaFinBase = (filtro.getFechaFin() != null) ? filtro.getFechaFin() : LocalDate.now();
+        LocalDateTime inicio = fechaInicioBase.atStartOfDay();
+        LocalDateTime fin = fechaFinBase.atTime(LocalTime.MAX);
 
         List<Recepcion> recepcionesDominio = recepcionPort.findAllByFilters(sucursalParaBuscar, inicio, fin);
         return mapper.toDtoList(recepcionesDominio);

@@ -9,10 +9,12 @@ import com.sistemasTarija.dunno.recepcion.application.port.in.FindRecepcionUseCa
 import com.sistemasTarija.dunno.recepcion.application.port.in.UpdateRecepcionUseCase;
 import com.sistemasTarija.dunno.recepcion.domain.model.Recepcion;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,8 +46,12 @@ public class RecepcionController {
     }
     @GetMapping
     public ResponseEntity<List<RecepcionDTO>> listarRecepciones(
-            @ModelAttribute RecepcionFilterDTO filtro,
-            @RequestHeader("idUsuario") Integer idUsuario) {
+            @RequestHeader("idUsuario") Integer idUsuario,
+            @RequestParam(required = false) Integer idSucursal,
+            @RequestParam(value = "fecha", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha,
+            @RequestParam(value = "fecha_fin", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin
+    ) {
+        RecepcionFilterDTO filtro = new RecepcionFilterDTO(idSucursal, fecha, fechaFin);
         List<RecepcionDTO> recepciones = findRecepcionUseCase.findAll(filtro, idUsuario);
         return ResponseEntity.ok(recepciones);
     }

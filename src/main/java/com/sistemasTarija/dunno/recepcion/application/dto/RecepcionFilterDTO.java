@@ -13,9 +13,12 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RecepcionFilterDTO {
+    @JsonProperty("idSucursal")
+    private Integer idSucursal;
+
     @JsonProperty("fecha")
     private LocalDate fecha;
 
-    @JsonProperty("idSucursal")
-    private Integer idSucursal;
+    @JsonProperty("fecha_fin")
+    private LocalDate fechaFin;
 }
