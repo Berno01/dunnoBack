@@ -15,7 +15,8 @@ public interface RecepcionRepository extends JpaRepository<RecepcionEntity, Inte
     
     @Query("SELECT r FROM RecepcionEntity r " +
            "WHERE (:idSucursal IS NULL OR r.idSucursal = :idSucursal) " +
-           "AND r.idRecepcion = :idRecepcion")
+           "AND r.idRecepcion = :idRecepcion " +
+           "AND r.estado = true")
     Optional<RecepcionEntity> buscarPorIdYSucursal(
             @Param("idRecepcion") Integer idRecepcion,
             @Param("idSucursal") Integer idSucursal
@@ -24,6 +25,7 @@ public interface RecepcionRepository extends JpaRepository<RecepcionEntity, Inte
     @Query("SELECT r FROM RecepcionEntity r " +
            "WHERE (:idSucursal IS NULL OR r.idSucursal = :idSucursal) " +
            "AND r.fecha BETWEEN :fechaInicio AND :fechaFin " +
+           "AND r.estado = true " +
            "ORDER BY r.fecha DESC")
     List<RecepcionEntity> buscarListaConFiltros(
             @Param("idSucursal") Integer idSucursal,
