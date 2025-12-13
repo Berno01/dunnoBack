@@ -49,10 +49,20 @@ public class Venta {
 
 
     public void checkMontosPago(){
-        if (this.descuento >= this.total) throw new VentaFailedException("Error: El descuento es superior a la venta");
+        // Calcular subtotal (antes del descuento)
+        double subtotal = this.detalleVenta.stream()
+                .mapToDouble(DetalleVenta::getTotal)
+                .sum();
+        
+        // Verificar que el descuento no sea igual o mayor al subtotal
+        if (this.descuento >= subtotal) {
+            throw new VentaFailedException("Error: El descuento (" + this.descuento + ") no puede ser igual o mayor al subtotal (" + subtotal + ")");
+        }
+        
+        // Verificar que la suma de pagos coincida con el total (después del descuento)
         Double sumaPagos = this.montoEfectivo + this.montoQr + this.montoTarjeta + this.montoGiftcard;
-        if(Math.abs(sumaPagos - (this.total)) > 0.001){
-            throw new VentaFailedException("Error: La suma ("+sumaPagos+") no coincide con el total (" + this.total + ")");
+        if(Math.abs(sumaPagos - this.total) > 0.001){
+            throw new VentaFailedException("Error: La suma de pagos ("+sumaPagos+") no coincide con el total (" + this.total + ")");
         }
     }
 

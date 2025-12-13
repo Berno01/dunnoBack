@@ -65,12 +65,20 @@ public class ModeloRepositoryAdapter implements ModeloPersistencePort {
     }
     
     private void updateColoresYVariantes(ModeloCatalogoEntity existingEntity, Modelo modelo) {
+        // Crear set de idColor que vienen en el request
+        Set<Integer> requestedColorIds = modelo.getColores().stream()
+                .map(ModeloColor::getIdColor)
+                .collect(Collectors.toSet());
+        
+        // ELIMINAR colores que NO vienen en el request
+        existingEntity.getColores().removeIf(color -> !requestedColorIds.contains(color.getIdColor()));
+        
         // Crear un mapa de colores existentes por idColor para acceso rápido
         Map<Integer, ModeloColorCatalogoEntity> existingColorMap = existingEntity.getColores().stream()
                 .collect(Collectors.toMap(
                         ModeloColorCatalogoEntity::getIdColor,
                         color -> color,
-                        (c1, c2) -> c1  // En caso de duplicados (no debería pasar)
+                        (c1, c2) -> c1
                 ));
         
         // Procesar cada color del request
@@ -78,11 +86,11 @@ public class ModeloRepositoryAdapter implements ModeloPersistencePort {
             ModeloColorCatalogoEntity existingColor = existingColorMap.get(modeloColor.getIdColor());
             
             if (existingColor != null) {
-                // ✅ El color YA EXISTE: solo MODIFICAR la foto y actualizar variantes
+                // El color YA EXISTE: actualizar foto y recrear variantes
                 existingColor.setFotoUrl(modeloColor.getFotoUrl());
                 updateVariantes(existingColor, modeloColor);
             } else {
-                // ✅ Color NUEVO: AGREGAR a la lista existente
+                // Color NUEVO: AGREGAR a la lista
                 ModeloColorCatalogoEntity newColor = new ModeloColorCatalogoEntity();
                 newColor.setFotoUrl(modeloColor.getFotoUrl());
                 newColor.setIdColor(modeloColor.getIdColor());
@@ -99,38 +107,36 @@ public class ModeloRepositoryAdapter implements ModeloPersistencePort {
                     }
                 }
                 
-                // ⚠️ IMPORTANTE: agregamos a la lista SIN hacer clear()
                 existingEntity.getColores().add(newColor);
             }
         }
-        
-        // ⚠️ NO eliminamos colores que no vienen en el request
-        // Esto evita problemas de FK y mantiene el historial
     }
     
     private void updateVariantes(ModeloColorCatalogoEntity existingColor, ModeloColor modeloColor) {
-        // Crear set de tallas existentes para búsqueda rápida
+        // Crear set de idTalla que vienen en el request
+        Set<Integer> requestedTallaIds = modeloColor.getVariantes().stream()
+                .map(Variante::getIdTalla)
+                .collect(Collectors.toSet());
+        
+        // ELIMINAR variantes que NO vienen en el request
+        existingColor.getVariantes().removeIf(variante -> !requestedTallaIds.contains(variante.getIdTalla()));
+        
+        // Crear set de tallas existentes después de la limpieza
         Set<Integer> existingTallas = existingColor.getVariantes().stream()
                 .map(VarianteCatalogoEntity::getIdTalla)
                 .collect(Collectors.toSet());
         
-        // Procesar cada variante del request
+        // AGREGAR variantes nuevas
         if (modeloColor.getVariantes() != null) {
             for (Variante variante : modeloColor.getVariantes()) {
                 if (!existingTallas.contains(variante.getIdTalla())) {
-                    // ✅ Variante NUEVA: AGREGAR a la lista existente
                     VarianteCatalogoEntity newVariante = new VarianteCatalogoEntity();
                     newVariante.setIdTalla(variante.getIdTalla());
                     newVariante.setModeloColor(existingColor);
                     existingColor.getVariantes().add(newVariante);
                 }
-                // ✅ Si la variante YA EXISTE: NO hacer nada (no hay campos que modificar)
-                // Las variantes solo tienen idTalla, que es el identificador
             }
         }
-        
-        // ⚠️ NO eliminamos variantes que no vienen en el request
-        // Esto evita problemas de FK con detalle_recepcion, inventario, etc.
     }
 
     @Override
