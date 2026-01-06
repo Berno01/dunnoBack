@@ -11,6 +11,7 @@ import com.sistemasTarija.dunno.recepcion.application.port.out.RecepcionPersista
 import com.sistemasTarija.dunno.recepcion.domain.exception.RecepcionFailedException;
 import com.sistemasTarija.dunno.recepcion.domain.model.DetalleRecepcion;
 import com.sistemasTarija.dunno.recepcion.domain.model.Recepcion;
+import com.sistemasTarija.dunno.recepcion.domain.model.RecepcionResumen;
 import com.sistemasTarija.dunno.venta.application.port.in.FindUsuarioUseCase;
 import com.sistemasTarija.dunno.venta.application.service.InventarioService;
 import com.sistemasTarija.dunno.venta.domain.exception.InventarioFailedExeption;
@@ -84,8 +85,8 @@ public class RecepcionService implements CreateRecepcionUseCase, FindRecepcionUs
         LocalDateTime inicio = fechaInicioBase.atStartOfDay();
         LocalDateTime fin = fechaFinBase.atTime(LocalTime.MAX);
 
-        List<Recepcion> recepcionesDominio = recepcionPort.findAllByFilters(sucursalParaBuscar, inicio, fin);
-        return mapper.toDtoList(recepcionesDominio);
+        List<RecepcionResumen> resumenes = recepcionPort.findAllResumenByFilters(sucursalParaBuscar, inicio, fin);
+        return mapper.toDtoListFromResumen(resumenes);
     }
 
     @Override

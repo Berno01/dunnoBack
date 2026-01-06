@@ -2,6 +2,7 @@ package com.sistemasTarija.dunno.recepcion.application.mapper;
 
 import com.sistemasTarija.dunno.recepcion.application.dto.RecepcionDTO;
 import com.sistemasTarija.dunno.recepcion.domain.model.Recepcion;
+import com.sistemasTarija.dunno.recepcion.domain.model.RecepcionResumen;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -17,4 +18,9 @@ public interface RecepcionMapper {
     RecepcionDTO toDto(Recepcion recepcion);
 
     List<RecepcionDTO> toDtoList(List<Recepcion> recepciones);
+    
+    @Mapping(target = "detalles", ignore = true)
+    RecepcionDTO toDto(RecepcionResumen resumen);
+
+    List<RecepcionDTO> toDtoListFromResumen(List<RecepcionResumen> resumenes);
 }

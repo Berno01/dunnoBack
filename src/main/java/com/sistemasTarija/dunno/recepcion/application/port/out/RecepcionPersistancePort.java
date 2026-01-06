@@ -10,4 +10,5 @@ public interface RecepcionPersistancePort {
     Recepcion save(Recepcion recepcion);
     Optional<Recepcion> findByIdAndSucursal(Integer idRecepcion, Integer idSucursal);
     List<Recepcion> findAllByFilters(Integer idSucursal, LocalDateTime fechaInicio, LocalDateTime fechaFin);
+    List<com.sistemasTarija.dunno.recepcion.domain.model.RecepcionResumen> findAllResumenByFilters(Integer idSucursal, LocalDateTime fechaInicio, LocalDateTime fechaFin);
 }

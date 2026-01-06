@@ -26,6 +26,9 @@ public class RecepcionDTO {
     @JsonProperty("estado")
     private Boolean estado;
 
+    @JsonProperty("totalItems")
+    private Long totalItems;
+
     @JsonProperty("detalles")
     private List<DetalleRecepcionDTO> detalles;
 }

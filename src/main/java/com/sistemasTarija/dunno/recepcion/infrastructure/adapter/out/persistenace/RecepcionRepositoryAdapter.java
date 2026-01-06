@@ -12,6 +12,8 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import com.sistemasTarija.dunno.recepcion.domain.model.RecepcionResumen;
 
 @Component
 @RequiredArgsConstructor
@@ -41,5 +43,18 @@ public class RecepcionRepositoryAdapter implements RecepcionPersistancePort {
     public List<Recepcion> findAllByFilters(Integer idSucursal, LocalDateTime fechaInicio, LocalDateTime fechaFin) {
         List<RecepcionEntity> entities = repository.buscarListaConFiltros(idSucursal, fechaInicio, fechaFin);
         return mapper.toListRecepcionModel(entities);
+    }
+
+    @Override
+    public List<RecepcionResumen> findAllResumenByFilters(Integer idSucursal, LocalDateTime fechaInicio, LocalDateTime fechaFin) {
+        return repository.buscarResumenConFiltros(idSucursal, fechaInicio, fechaFin).stream()
+                .map(proj -> new RecepcionResumen(
+                        proj.getIdRecepcion(),
+                        proj.getFecha(),
+                        proj.getIdSucursal(),
+                        proj.getEstado(),
+                        proj.getTotalItems()
+                ))
+                .collect(Collectors.toList());
     }
 }
