@@ -128,28 +128,63 @@ public class VentaService implements CreateVentaUseCase, FindVentaUseCase, Updat
         Venta ventaAntigua = ventaPort.findByIdAndSucursal(idVenta, idSucursalBusqueda)
                 .orElseThrow(() -> new VentaFailedException("Venta no encontrada o sin permisos para editarla"));
 
-        for (DetalleVenta detalleViejo : ventaAntigua.getDetalleVenta()) {
+        // 1. Mapear los ítems existentes para cálculo de deltas (Key: idVariante, Value: Cantidad)
+        java.util.Map<Integer, Integer> mapaStockAntiguo = ventaAntigua.getDetalleVenta().stream()
+                .collect(java.util.stream.Collectors.toMap(
+                        DetalleVenta::getIdVariante,
+                        DetalleVenta::getCantidad,
+                        Integer::sum
+                ));
 
-            Inventario inventario = inventarioPort.findByIdVarianteAndIdSucursal(detalleViejo.getIdVariante(), ventaAntigua.getIdSucursal())
-                    .orElseThrow(() -> new InventarioFailedExeption("Error de integridad: Inventario no encontrado para devolución."));
-            // DEVOLVEMOS al stock
-            inventario.increaseStock(detalleViejo.getCantidad());
-            inventarioPort.save(inventario);
-        }
         Venta ventaNuevaDatos = mapper.toDomain(ventaDTO);
+
+        // 2. Procesar nuevos items y calcular deltas
         for (DetalleVenta detalleNuevo : ventaNuevaDatos.getDetalleVenta()) {
+            Integer idVariante = detalleNuevo.getIdVariante();
+            Integer cantidadNueva = detalleNuevo.getCantidad();
+            Integer idSucursal = ventaAntigua.getIdSucursal();
 
-            Inventario inventario = inventarioPort.findByIdVarianteAndIdSucursal(detalleNuevo.getIdVariante(), ventaAntigua.getIdSucursal())
-                    .orElseThrow(() -> new InventarioFailedExeption("Inventario no encontrado para el nuevo item ID: " + detalleNuevo.getIdVariante()));
+            Inventario inventario = inventarioPort.findByIdVarianteAndIdSucursal(idVariante, idSucursal)
+                    .orElseThrow(() -> new InventarioFailedExeption("Inventario no encontrado para el item ID: " + idVariante));
 
-            try {
-                // DESCONTAMOS del stock
-                inventario.decreaseStock(detalleNuevo.getCantidad());
-            } catch (InventarioFailedExeption e) {
-                throw new VentaFailedException("No se puede actualizar: Stock insuficiente para el item " + detalleNuevo.getIdVariante(), e);
+            if (mapaStockAntiguo.containsKey(idVariante)) {
+                // El ítem ya existía -> Calcular diferencia
+                Integer cantidadAntigua = mapaStockAntiguo.get(idVariante);
+                int delta = cantidadNueva - cantidadAntigua;
+
+                if (delta > 0) {
+                    // Aumentó la cantidad vendida: Restar diferencia del stock
+                    try {
+                        inventario.decreaseStock(delta);
+                    } catch (InventarioFailedExeption e) {
+                        throw new VentaFailedException("Stock insuficiente para aumentar la cantidad del item " + idVariante, e);
+                    }
+                } else if (delta < 0) {
+                    // Disminuyó la cantidad vendida: Devolver diferencia al stock
+                    inventario.increaseStock(Math.abs(delta));
+                }
+                // Si delta es 0, no impactamos inventario
+
+                // Marcamos como procesado
+                mapaStockAntiguo.remove(idVariante);
+            } else {
+                // Ítem nuevo en la venta -> Restar total del stock
+                try {
+                    inventario.decreaseStock(cantidadNueva);
+                } catch (InventarioFailedExeption e) {
+                    throw new VentaFailedException("Stock insuficiente para el nuevo item " + idVariante, e);
+                }
             }
             inventarioPort.save(inventario);
         }
+
+        // 3. Procesar los ítems ELIMINADOS de la venta (quedaron en el mapa) -> Devolver todo al stock
+        mapaStockAntiguo.forEach((idVariante, cantidadAntigua) -> {
+            Inventario inventario = inventarioPort.findByIdVarianteAndIdSucursal(idVariante, ventaAntigua.getIdSucursal())
+                    .orElseThrow(() -> new InventarioFailedExeption("Error de integridad: Inventario no encontrado para devolución del item " + idVariante));
+            inventario.increaseStock(cantidadAntigua);
+            inventarioPort.save(inventario);
+        });
 
         ventaAntigua.actualizarDatos(
                 ventaNuevaDatos.getDetalleVenta(),

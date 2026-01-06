@@ -104,36 +104,57 @@ public class RecepcionService implements CreateRecepcionUseCase, FindRecepcionUs
             throw new RecepcionFailedException("No se puede modificar una recepción anulada");
         }
 
-        // 3. REVERTIR TODO el inventario de la recepción antigua
-        //    (Como si la estuviéramos anulando)
-        for (DetalleRecepcion detalleViejo : recepcionAntigua.getDetalles()) {
-            inventarioService.revertirIngreso(
-                    detalleViejo.getIdVariante(),
-                    recepcionAntigua.getIdSucursal(),
-                    detalleViejo.getCantidad()
-            );
-        }
+        // 3. Mapear los ítems existentes para cálculo de deltas (Key: idVariante, Value: Cantidad)
+        // Usamos un Map mutable para ir eliminando los procesados
+        java.util.Map<Integer, Integer> mapaStockAntiguo = recepcionAntigua.getDetalles().stream()
+                .collect(java.util.stream.Collectors.toMap(
+                        DetalleRecepcion::getIdVariante,
+                        DetalleRecepcion::getCantidad,
+                        Integer::sum // Merge function por seguridad en caso de variantes duplicadas
+                ));
 
         // 4. Mapear los nuevos datos
         Recepcion recepcionNueva = mapper.toDomain(recepcionDTO);
         recepcionNueva.setIdRecepcion(idRecepcion); // Usar el ID del path variable
         recepcionNueva.setEstado(true); // Mantener activa
         recepcionNueva.setFecha(recepcionAntigua.getFecha()); // Preservar la fecha original
+        // Aseguramos mantener la sucursal original para consistencia del inventario
+        recepcionNueva.setIdSucursal(recepcionAntigua.getIdSucursal());
 
-        // 5. Guardar la recepción actualizada
-        Recepcion savedRecepcion = recepcionPort.save(recepcionNueva);
+        // 5. Calcular DELTAS y aplicar cambios al inventario
+        for (DetalleRecepcion detalleNuevo : recepcionNueva.getDetalles()) {
+            Integer idVariante = detalleNuevo.getIdVariante();
+            Integer cantidadNueva = detalleNuevo.getCantidad();
 
-        // 6. REGISTRAR TODO el inventario de la recepción nueva
-        //    (Como si fuera una recepción nueva)
-        for (DetalleRecepcion detalleNuevo : savedRecepcion.getDetalles()) {
-            inventarioService.registrarIngreso(
-                    detalleNuevo.getIdVariante(),
-                    savedRecepcion.getIdSucursal(),
-                    detalleNuevo.getCantidad()
-            );
+            if (mapaStockAntiguo.containsKey(idVariante)) {
+                // El ítem ya existía -> Calcular diferencia
+                Integer cantidadAntigua = mapaStockAntiguo.get(idVariante);
+                int delta = cantidadNueva - cantidadAntigua;
+
+                if (delta > 0) {
+                    // Aumentó la cantidad: Ingresar la diferencia
+                    inventarioService.registrarIngreso(idVariante, recepcionNueva.getIdSucursal(), delta);
+                } else if (delta < 0) {
+                    // Disminuyó la cantidad: Revertir la diferencia (valor positivo)
+                    inventarioService.revertirIngreso(idVariante, recepcionNueva.getIdSucursal(), Math.abs(delta));
+                }
+                // Si delta es 0, no impactamos inventario
+
+                // Marcamos como procesado eliminándolo del mapa
+                mapaStockAntiguo.remove(idVariante);
+            } else {
+                // Ítem es nuevo en esta actualización -> Ingresar total
+                inventarioService.registrarIngreso(idVariante, recepcionNueva.getIdSucursal(), cantidadNueva);
+            }
         }
 
-        return savedRecepcion;
+        // 6. Procesar los ítems que fueron ELIMINADOS (quedaron en el mapa)
+        mapaStockAntiguo.forEach((idVariante, cantidadAntigua) -> {
+            inventarioService.revertirIngreso(idVariante, recepcionAntigua.getIdSucursal(), cantidadAntigua);
+        });
+
+        // 7. Guardar la recepción actualizada
+        return recepcionPort.save(recepcionNueva);
     }
 
     @Override
