@@ -9,5 +9,6 @@ public interface ModeloPersistencePort {
     Modelo saveModelo(Modelo modelo);
     Optional<Modelo> findById(Integer id);
     List<Modelo> findAll();
+    List<Modelo> findAllListado();
     boolean existsByNombre(String nombre);
 }

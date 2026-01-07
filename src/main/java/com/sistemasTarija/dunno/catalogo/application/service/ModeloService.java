@@ -1,6 +1,7 @@
 package com.sistemasTarija.dunno.catalogo.application.service;
 
 import com.sistemasTarija.dunno.catalogo.application.dto.ModeloDTO;
+import com.sistemasTarija.dunno.catalogo.application.dto.ModeloListadoDTO;
 import com.sistemasTarija.dunno.catalogo.application.dto.RegistrarModeloRequest;
 import com.sistemasTarija.dunno.catalogo.application.mapper.ModeloMapper;
 import com.sistemasTarija.dunno.catalogo.application.port.in.ManageModeloUseCase;
@@ -73,6 +74,14 @@ public class ModeloService implements ManageModeloUseCase {
     public List<ModeloDTO> findAllModelos() {
         return modeloPersistencePort.findAll().stream()
                 .map(modeloMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ModeloListadoDTO> findAllModelosListado() {
+        // Uses optimized persistence method (avoids variants loading) and optimized mapper (avoids variants serialization)
+        return modeloPersistencePort.findAllListado().stream()
+                .map(modeloMapper::toListadoDTO)
                 .collect(Collectors.toList());
     }
 

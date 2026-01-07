@@ -153,6 +153,13 @@ public class ModeloRepositoryAdapter implements ModeloPersistencePort {
     }
 
     @Override
+    public List<Modelo> findAllListado() {
+        return modeloRepository.findAllWithColores().stream()
+                .map(modeloPersistenceMapper::toDomainListado)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public boolean existsByNombre(String nombre) {
         return modeloRepository.existsByNombre(nombre);
     }

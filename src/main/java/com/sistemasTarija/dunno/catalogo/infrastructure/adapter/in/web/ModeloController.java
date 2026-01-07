@@ -1,6 +1,7 @@
 package com.sistemasTarija.dunno.catalogo.infrastructure.adapter.in.web;
 
 import com.sistemasTarija.dunno.catalogo.application.dto.ModeloDTO;
+import com.sistemasTarija.dunno.catalogo.application.dto.ModeloListadoDTO;
 import com.sistemasTarija.dunno.catalogo.application.dto.RegistrarModeloRequest;
 import com.sistemasTarija.dunno.catalogo.application.port.in.ManageModeloUseCase;
 import lombok.RequiredArgsConstructor;
@@ -36,8 +37,8 @@ public class ModeloController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ModeloDTO>> getAllModelos() {
-        List<ModeloDTO> modelos = manageModeloUseCase.findAllModelos();
+    public ResponseEntity<List<ModeloListadoDTO>> getAllModelos() {
+        List<ModeloListadoDTO> modelos = manageModeloUseCase.findAllModelosListado();
         return ResponseEntity.ok(modelos);
     }
 

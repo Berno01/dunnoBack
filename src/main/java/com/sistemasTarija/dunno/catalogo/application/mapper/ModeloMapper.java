@@ -1,6 +1,7 @@
 package com.sistemasTarija.dunno.catalogo.application.mapper;
 
 import com.sistemasTarija.dunno.catalogo.application.dto.ModeloDTO;
+import com.sistemasTarija.dunno.catalogo.application.dto.ModeloListadoDTO;
 import com.sistemasTarija.dunno.catalogo.application.dto.RegistrarModeloRequest;
 import com.sistemasTarija.dunno.catalogo.domain.model.Modelo;
 import com.sistemasTarija.dunno.catalogo.domain.model.ModeloColor;
@@ -43,6 +44,37 @@ public class ModeloMapper {
         return ModeloColor.builder()
                 .idColor(request.getIdColor())
                 .fotoUrl(request.getFotoUrl())
+                .build();
+    }
+
+    public ModeloListadoDTO toListadoDTO(Modelo modelo) {
+        if (modelo == null) return null;
+
+        List<ModeloListadoDTO.ModeloColorListadoDTO> coloresDTO = new ArrayList<>();
+        if (modelo.getColores() != null) {
+            coloresDTO = modelo.getColores().stream()
+                    .map(this::toModeloColorListadoDTO)
+                    .collect(Collectors.toList());
+        }
+
+        return ModeloListadoDTO.builder()
+                .id(modelo.getId())
+                .nombre(modelo.getNombre())
+                .precio(modelo.getPrecio())
+                .marca(catalogoMapper.toMarcaDTO(modelo.getMarca()))
+                .categoria(catalogoMapper.toCategoriaDTO(modelo.getCategoria()))
+                .corte(catalogoMapper.toCorteDTO(modelo.getCorte()))
+                .colores(coloresDTO)
+                .build();
+    }
+
+    private ModeloListadoDTO.ModeloColorListadoDTO toModeloColorListadoDTO(ModeloColor modeloColor) {
+        if (modeloColor == null) return null;
+        
+        return ModeloListadoDTO.ModeloColorListadoDTO.builder()
+                .id(modeloColor.getId())
+                .fotoUrl(modeloColor.getFotoUrl())
+                .color(catalogoMapper.toColorDTO(modeloColor.getColor()))
                 .build();
     }
 

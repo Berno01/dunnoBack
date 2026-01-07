@@ -6,11 +6,7 @@ import com.sistemasTarija.dunno.catalogo.domain.model.Variante;
 import com.sistemasTarija.dunno.catalogo.infrastructure.adapter.out.persistence.entity.ModeloCatalogoEntity;
 import com.sistemasTarija.dunno.catalogo.infrastructure.adapter.out.persistence.entity.ModeloColorCatalogoEntity;
 import com.sistemasTarija.dunno.catalogo.infrastructure.adapter.out.persistence.entity.VarianteCatalogoEntity;
-import com.sistemasTarija.dunno.catalogo.infrastructure.adapter.out.persistence.entity.options.*;
-import org.mapstruct.AfterMapping;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
+import org.mapstruct.*;
 
 @Mapper(componentModel = "spring", uses = {CatalogoPersistenceMapper.class})
 public interface ModeloPersistenceMapper {
@@ -49,6 +45,23 @@ public interface ModeloPersistenceMapper {
     @Mapping(target = "idTalla", source = "idTalla")
     @Mapping(target = "talla", source = "talla")
     Variante toDomain(VarianteCatalogoEntity entity);
+
+    // Optimized Listado Mappings
+    @Named("toDomainListadoModeloColor")
+    @Mapping(target = "idColor", source = "idColor")
+    @Mapping(target = "color", source = "color")
+    @Mapping(target = "variantes", ignore = true)
+    ModeloColor toDomainListado(ModeloColorCatalogoEntity entity);
+
+    @Mapping(target = "idMarca", source = "idMarca")
+    @Mapping(target = "idCategoria", source = "idCategoria")
+    @Mapping(target = "idCorte", source = "idCorte")
+    @Mapping(target = "marca", source = "marca")
+    @Mapping(target = "categoria", source = "categoria")
+    @Mapping(target = "corte", source = "corte")
+    @Mapping(target = "colores", qualifiedByName = "toDomainListadoModeloColor")
+    Modelo toDomainListado(ModeloCatalogoEntity entity);
+
 
     @AfterMapping
     default void linkModeloColor(@MappingTarget ModeloCatalogoEntity modeloEntity) {
