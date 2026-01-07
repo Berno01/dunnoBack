@@ -17,4 +17,6 @@ public class RecepcionResumen {
     private Integer idSucursal;
     private Boolean estado;
     private Long totalItems;
+    private java.util.Set<String> categorias;
+    private String marca; // Marca del primer item
 }

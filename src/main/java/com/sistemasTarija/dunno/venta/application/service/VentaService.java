@@ -37,11 +37,16 @@ public class VentaService implements CreateVentaUseCase, FindVentaUseCase, Updat
     @Override
     @Transactional
     public Venta save(VentaDTO ventaDTO) {
+        // Asegurar que la fecha de venta sea la actual de Bolivia si viene nula o para consistencia
+        if (ventaDTO.getFecha() == null) {
+            ventaDTO.setFecha(LocalDateTime.now(java.time.ZoneId.of("America/La_Paz")));
+        }
+        
         Venta venta = mapper.toDomain(ventaDTO);
         
         // Set audit fields for creation
-        venta.setCreatedAt(venta.getFecha());
-        venta.setUpdatedAt(venta.getFecha());
+        venta.setCreatedAt(ventaDTO.getFecha());
+        venta.setUpdatedAt(ventaDTO.getFecha());
         venta.setCreatedBy(ventaDTO.getIdUsuario());
         venta.setUpdatedBy(ventaDTO.getIdUsuario());
 
@@ -198,7 +203,7 @@ public class VentaService implements CreateVentaUseCase, FindVentaUseCase, Updat
         );
         
         // Update audit fields
-        ventaAntigua.setUpdatedAt(LocalDateTime.now());
+        ventaAntigua.setUpdatedAt(LocalDateTime.now(java.time.ZoneId.of("America/La_Paz")));
         ventaAntigua.setUpdatedBy(ventaDTO.getIdUsuario());
 
         Venta ventaActualizada = ventaPort.save(ventaAntigua);

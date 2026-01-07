@@ -47,14 +47,34 @@ public class RecepcionRepositoryAdapter implements RecepcionPersistancePort {
 
     @Override
     public List<RecepcionResumen> findAllResumenByFilters(Integer idSucursal, LocalDateTime fechaInicio, LocalDateTime fechaFin) {
-        return repository.buscarResumenConFiltros(idSucursal, fechaInicio, fechaFin).stream()
-                .map(proj -> new RecepcionResumen(
-                        proj.getIdRecepcion(),
-                        proj.getFecha(),
-                        proj.getIdSucursal(),
-                        proj.getEstado(),
-                        proj.getTotalItems()
-                ))
-                .collect(Collectors.toList());
+        List<com.sistemasTarija.dunno.recepcion.infrastructure.adapter.out.persistenace.repository.RecepcionResumenProjection> rawData = 
+                repository.buscarResumenConFiltros(idSucursal, fechaInicio, fechaFin);
+        
+        // Agrupar en memoria los datos planos
+        java.util.LinkedHashMap<Integer, RecepcionResumen> mapaAgrupado = new java.util.LinkedHashMap<>();
+        
+        for (com.sistemasTarija.dunno.recepcion.infrastructure.adapter.out.persistenace.repository.RecepcionResumenProjection row : rawData) {
+            mapaAgrupado.computeIfAbsent(row.getIdRecepcion(), k -> new RecepcionResumen(
+                    row.getIdRecepcion(),
+                    row.getFecha(),
+                    row.getIdSucursal(),
+                    row.getEstado(),
+                    0L,
+                    new java.util.HashSet<>(),
+                    row.getNombreMarca() // Se asigna la marca del primer item (ordenados por ID detalle)
+            ));
+            
+            RecepcionResumen item = mapaAgrupado.get(row.getIdRecepcion());
+            // Sumar cantidad si no es null
+            if (row.getCantidad() != null) {
+                item.setTotalItems(item.getTotalItems() + row.getCantidad());
+            }
+            // Agregar categoría si no es null
+            if (row.getNombreCategoria() != null) {
+                item.getCategorias().add(row.getNombreCategoria());
+            }
+        }
+
+        return new java.util.ArrayList<>(mapaAgrupado.values());
     }
 }

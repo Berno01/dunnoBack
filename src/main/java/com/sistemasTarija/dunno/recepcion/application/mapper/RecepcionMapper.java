@@ -20,6 +20,9 @@ public interface RecepcionMapper {
     List<RecepcionDTO> toDtoList(List<Recepcion> recepciones);
     
     @Mapping(target = "detalles", ignore = true)
+    @Mapping(target = "totalItems", source = "totalItems")
+    @Mapping(target = "marca", source = "marca")
+    @Mapping(target = "categorias", source = "categorias")
     RecepcionDTO toDto(RecepcionResumen resumen);
 
     List<RecepcionDTO> toDtoListFromResumen(List<RecepcionResumen> resumenes);

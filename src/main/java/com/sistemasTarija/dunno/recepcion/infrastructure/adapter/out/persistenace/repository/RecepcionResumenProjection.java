@@ -7,5 +7,8 @@ public interface RecepcionResumenProjection {
     LocalDateTime getFecha();
     Integer getIdSucursal();
     Boolean getEstado();
-    Long getTotalItems();
+    Long getTotalItems(); // Ya no se usará directamente para suma total, sino cantidad parcial
+    Integer getCantidad(); // Cantidad de la línea
+    String getNombreMarca();
+    String getNombreCategoria();
 }

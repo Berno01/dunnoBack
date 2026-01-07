@@ -39,7 +39,8 @@ public class RecepcionService implements CreateRecepcionUseCase, FindRecepcionUs
     @Transactional
     public Recepcion save(RecepcionDTO recepcionDTO) {
         recepcionDTO.setEstado(true);
-        recepcionDTO.setFecha(LocalDateTime.now());
+        // Aseguramos la zona horaria de Bolivia explícitamente
+        recepcionDTO.setFecha(LocalDateTime.now(java.time.ZoneId.of("America/La_Paz")));
         Recepcion recepcion = mapper.toDomain(recepcionDTO);
 
         // Guardar la recepción primero

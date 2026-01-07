@@ -29,6 +29,12 @@ public class RecepcionDTO {
     @JsonProperty("totalItems")
     private Long totalItems;
 
+    @JsonProperty("marca")
+    private String marca;
+
+    @JsonProperty("categorias")
+    private java.util.Set<String> categorias;
+
     @JsonProperty("detalles")
     private List<DetalleRecepcionDTO> detalles;
 }

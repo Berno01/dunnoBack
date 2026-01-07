@@ -34,13 +34,19 @@ public interface RecepcionRepository extends JpaRepository<RecepcionEntity, Inte
     );
 
     @Query("SELECT r.idRecepcion as idRecepcion, r.fecha as fecha, r.idSucursal as idSucursal, " +
-           "r.estado as estado, CAST(COALESCE(SUM(d.cantidad), 0) AS long) as totalItems " +
-           "FROM RecepcionEntity r LEFT JOIN r.detalles d " +
+           "r.estado as estado, d.cantidad as cantidad, " +
+           "ma.nombre as nombreMarca, cat.nombre as nombreCategoria " +
+           "FROM RecepcionEntity r " +
+           "LEFT JOIN r.detalles d " +
+           "LEFT JOIN d.variante v " +
+           "LEFT JOIN v.modeloColor mc " +
+           "LEFT JOIN mc.modelo m " +
+           "LEFT JOIN m.marca ma " +
+           "LEFT JOIN m.categoria cat " +
            "WHERE (:idSucursal IS NULL OR r.idSucursal = :idSucursal) " +
            "AND r.fecha BETWEEN :fechaInicio AND :fechaFin " +
            "AND r.estado = true " +
-           "GROUP BY r.idRecepcion, r.fecha, r.idSucursal, r.estado " +
-           "ORDER BY r.fecha DESC")
+           "ORDER BY r.fecha DESC, r.idRecepcion, d.idDetalleRecepcion ASC")
     List<RecepcionResumenProjection> buscarResumenConFiltros(
             @Param("idSucursal") Integer idSucursal,
             @Param("fechaInicio") LocalDateTime fechaInicio,
